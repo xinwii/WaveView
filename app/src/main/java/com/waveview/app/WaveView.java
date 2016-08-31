@@ -1,6 +1,5 @@
 package com.waveview.app;
 
-import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapShader;
@@ -18,7 +17,7 @@ import android.widget.ImageView;
  * Created by ddsc on 8/29/2016.
  */
 public class WaveView extends ImageView {
-    private String TAG = "MyView";
+    private String TAG = "WaveView";
     private float marginLeftValue = 0;
     // shader containing repeated waves
     private BitmapShader mWaveShader;
@@ -27,7 +26,7 @@ public class WaveView extends ImageView {
     private Matrix mShaderMatrix;
     private float[] waveY;
     private Context mContext;
-    private float waveLevel = 0.1f;
+    private float waveLevel = 1f;
 
     public WaveView(Context context) {
         super(context);
@@ -81,11 +80,11 @@ public class WaveView extends ImageView {
         frontPaint.setStrokeWidth(2);
         frontPaint.setAntiAlias(true);
         //   frontPaint.setColor(ActivityCompat.getColor(mContext, R.color.behind_wave));
-        frontPaint.setColor(Color.RED);
+        frontPaint.setColor(ActivityCompat.getColor(mContext,R.color.behind_wave));
         waveY = new float[getWidth() + 1];
         for (int beginX = 0; beginX <= getWidth(); beginX++) {
             double wx = beginX * 2 * Math.PI / getWidth();
-            float beginY = (float) (getHeight() * 0.5 + getHeight() * 0.5 * Math.sin(wx));
+            float beginY = (float) (getHeight() * 0.5 + getHeight() * 0.4 * Math.sin(wx));
             canvas.drawLine(beginX, beginY, beginX, getHeight(), frontPaint);
             Log.d(TAG, "beginX=" + beginX + ",y=" + beginY + ",height=" + getHeight());
             waveY[beginX] = beginY;
@@ -94,7 +93,7 @@ public class WaveView extends ImageView {
         Paint behindPaint = new Paint();
         behindPaint.setAntiAlias(true);
         behindPaint.setStrokeWidth(2);
-        behindPaint.setColor(Color.BLUE);
+        behindPaint.setColor(Color.WHITE);
         for (int beginX = 0; beginX <= getWidth(); beginX++) {
             canvas.drawLine(beginX, waveY[(beginX + getWidth() / 2) % getWidth()], beginX, getHeight(), behindPaint);
         }
@@ -109,7 +108,8 @@ public class WaveView extends ImageView {
             if (mViewPaint.getShader() == null) {
                 mViewPaint.setShader(mWaveShader);
             }
-            mShaderMatrix.setScale(1f, waveLevel, 0, getHeight() / 2);
+            Log.d(TAG, "onDraw: waveLevel="+waveLevel);
+            mShaderMatrix.setScale(1f, waveLevel, getWidth()/2, getHeight() / 2);
             // translate shader according to mWaveShiftRatio and mWaterLevelRatio
             // this decides the start position(mWaveShiftRatio for x, mWaterLevelRatio for y) of waves
             mShaderMatrix.postTranslate(
@@ -122,4 +122,5 @@ public class WaveView extends ImageView {
             mViewPaint.setShader(null);
         }
     }
+
 }
